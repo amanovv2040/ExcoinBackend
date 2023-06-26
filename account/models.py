@@ -19,6 +19,9 @@ class User(AbstractUser):
     avatar = models.ImageField(verbose_name=_('Profile photo'), upload_to='avatars/', blank=True,
                                default='avatars/default.png')
     balance = models.FloatField(verbose_name=_('Remaining balance'), default=0)
+    # skype = models.CharField(verbose_name=_('Skype account'), unique=True)
+    second_name = models.CharField(verbose_name=_('Second name'), max_length=150, blank=True)
+    passport = models.IntegerField(verbose_name=_('Passport ID'), blank=True, null=True, default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
