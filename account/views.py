@@ -34,7 +34,7 @@ import jwt
 class UserRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
-    renderer_classes = (UserRenderer,)
+    # renderer_classes = (UserRenderer,)
 
     def post(self, request, *args, **kwargs):
         serializer = UserRegisterSerializer(data=request.data)

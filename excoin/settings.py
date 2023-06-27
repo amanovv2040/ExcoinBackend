@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+
+import corsheaders.middleware
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     # third party apps
     'djoser',
     'drf_yasg',
+    'corsheaders',
 
     # rest API
     'rest_framework',
@@ -61,7 +64,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'excoin.urls'
 
