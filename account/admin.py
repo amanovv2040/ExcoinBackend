@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 admin.site.site_header = 'EXCOIN'
-admin.site.site_title = 'Admin EXCOIN'
 
 
 # Пользователи
