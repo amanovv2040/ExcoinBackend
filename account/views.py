@@ -61,13 +61,14 @@ class UserRegisterView(generics.CreateAPIView):
             email = serializer.data['email']
             user = User.objects.get(email=email)
             token = RefreshToken.for_user(user).access_token
+            redirect_url = request.data.get('redirect_url', '')
 
             # Composing a mail message
             current_site_domain = get_current_site(request).domain
             relative_link = reverse('verify-email')
             absolute_url = f"http://{current_site_domain}{relative_link}?token={token}"
             email_body = f"Здравствуйте! {user.username},\nВаш email был указан при регистрации на сайте excoin.kg \n" \
-                         f"Для подтверждения регистрации в системе воспользуйтесь с ссылкой ниже: \n\n{absolute_url}\n\n" \
+                         f"Для подтверждения регистрации в системе воспользуйтесь с ссылкой ниже: \n\n{absolute_url}&redirect_url={redirect_url}\n\n" \
                          f"Если Вы получили это сообщение, но не подавали заявку на регистрацию, \nвозможно кто-то указал Ваш e-mail по ошибке. \nВ этом случае просто проигнорируйте это сообщение."
             email_data = {
                 'email_body': email_body,
@@ -92,6 +93,7 @@ class VerifyEmail(APIView):
 
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
+        redirect_url = request.GET.get('redirect_url')
         token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
@@ -100,6 +102,7 @@ class VerifyEmail(APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
+                return CustomRedirect(f'{redirect_url}?token_valid=True&verification=True')
             return Response({'email': _('Account successfully verified')}, status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
             return Response({'error': _('Account activation Expired')}, status.HTTP_400_BAD_REQUEST)
@@ -143,7 +146,8 @@ class PasswordResetEmail(generics.GenericAPIView):
                 'to_email': user.email
             }
             Util.send_email(data)
-        return Response({'success': _('We have sent you a link to reset your password')}, status=status.HTTP_200_OK)
+            return Response({'success': _('We have sent you a link to reset your password')}, status=status.HTTP_200_OK)
+        return Response({'error': _('Пользователь не зарегистрирован')})
 
 
 class PasswordTokenCheckAPI(generics.GenericAPIView):

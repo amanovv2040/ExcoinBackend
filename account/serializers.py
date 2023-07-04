@@ -11,10 +11,11 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True, required=True, max_length=68, min_length=8)
+    redirect_url = serializers.URLField(required=False, write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'password2']
+        fields = ['email', 'username', 'password', 'password2', 'redirect_url']
 
     def save(self, *args, **kwargs):
         # first_name = self.validated_data['first_name']
