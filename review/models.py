@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from excoin.settings import AUTH_USER_MODEL
 from account.models import User
-from django.utils import timezone
+from datetime import datetime
 
 
 class Review(models.Model):
@@ -26,9 +26,8 @@ class Review(models.Model):
         verbose_name=_('Review text'),
         null=True, blank=True
     )
-    date_created = models.DateTimeField(
+    date_created = models.CharField(
         verbose_name=_('Review created date'),
-        default=None,
         null=True, blank=True
     )
 
@@ -40,3 +39,7 @@ class Review(models.Model):
         if user:
             return user.id
         return None
+
+    def save(self, *args, **kwargs):
+        self.date_created = datetime.now().strftime('%d.%m.%Y, %H:%M')
+        return super().save(*args, **kwargs)

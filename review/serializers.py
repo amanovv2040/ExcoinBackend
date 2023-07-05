@@ -6,4 +6,4 @@ from .models import Review
 class ReviewAPIViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ['name', 'email', 'text', 'date_created']
