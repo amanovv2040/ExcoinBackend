@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     # local apps
     'account.apps.AccountConfig',
+    'review.apps.ReviewConfig',
 ]
 
 MIDDLEWARE = [
@@ -159,7 +160,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'PAGE_SIZE': 18,
 }
 
 # Default primary key field type

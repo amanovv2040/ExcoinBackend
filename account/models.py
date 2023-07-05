@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils import timezone
 
 from .managers import UserManager
 
