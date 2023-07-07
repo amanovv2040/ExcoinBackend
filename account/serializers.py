@@ -43,10 +43,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class EmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    verification_code = serializers.CharField(min_length=6)
+    code = serializers.CharField(min_length=6)
 
     class Meta:
-        fields = ['email', 'verification_code']
+        fields = ['email', 'code']
 
 
 class LoginSerializer(serializers.ModelSerializer):

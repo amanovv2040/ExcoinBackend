@@ -96,7 +96,7 @@ class VerifyEmailCode(APIView):
             serializer = EmailVerificationSerializer(data=request.data)
 
             if serializer.is_valid():
-                code = serializer.data['verification_code']
+                code = serializer.data['code']
                 email = serializer.data['email']
                 if User.objects.filter(email=email).exists():
                     user = User.objects.get(email=email)
