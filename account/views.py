@@ -36,6 +36,7 @@ import jwt
 from django.http import HttpResponsePermanentRedirect
 from dotenv import load_dotenv
 import os
+from random import randint
 
 load_dotenv()
 
@@ -51,8 +52,8 @@ class UserRegisterView(generics.CreateAPIView):
     # renderer_classes = (UserRenderer,)
 
     def post(self, request, *args, **kwargs):
-        serializer = UserRegisterSerializer(data=request.data)
 
+        serializer = self.serializer_class(data=request.data)
         # Creating new User
         if serializer.is_valid():
             serializer.save()
@@ -60,15 +61,19 @@ class UserRegisterView(generics.CreateAPIView):
             # Get user by email and create JWT Token
             email = serializer.data['email']
             user = User.objects.get(email=email)
-            token = RefreshToken.for_user(user).access_token
-            redirect_url = request.data.get('redirect_url', '')
+            user.verification_code = str(randint(100_000, 999_999))
+            user.save()
+
+            # token = RefreshToken.for_user(user).access_token
+            # redirect_url = request.data.get('redirect_url', '')
 
             # Composing a mail message
-            current_site_domain = get_current_site(request).domain
-            relative_link = reverse('verify-email')
-            absolute_url = f"http://{current_site_domain}{relative_link}?token={token}"
+            # current_site_domain = get_current_site(request).domain
+            # relative_link = reverse('verify-email')
+            # absolute_url = f"http://{current_site_domain}{relative_link}?redirect_url={redirect_url}"
+            code = user.verification_code
             email_body = f"Здравствуйте! {user.username},\nВаш email был указан при регистрации на сайте excoin.kg \n" \
-                         f"Для подтверждения регистрации в системе воспользуйтесь с ссылкой ниже: \n\n{absolute_url}&redirect_url={redirect_url}\n\n" \
+                         f"Для подтверждения регистрации в системе введите код ниже: \n\n{code}\n\n" \
                          f"Если Вы получили это сообщение, но не подавали заявку на регистрацию, \nвозможно кто-то указал Ваш e-mail по ошибке. \nВ этом случае просто проигнорируйте это сообщение."
             email_data = {
                 'email_body': email_body,
@@ -85,29 +90,51 @@ class UserRegisterView(generics.CreateAPIView):
             return Response(data)
 
 
-class VerifyEmail(APIView):
-    serializer_class = EmailVerificationSerializer
+class VerifyEmailCode(APIView):
+    try:
+        def post(self, request):
+            serializer = EmailVerificationSerializer(data=request.data)
 
-    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description',
-                                           type=openapi.TYPE_STRING)
+            if serializer.is_valid():
+                code = serializer.data['verification_code']
+                email = serializer.data['email']
+                if User.objects.filter(email=email).exists():
+                    user = User.objects.get(email=email)
+                    if user.verification_code != code:
+                        return Response({'error': 'Введен неправильный код'}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        user.is_verified = True
+                        user.save()
+                        return Response({'response': _('Активация прошла успешна')}, status=status.HTTP_200_OK)
+                return Response({'error': 'Введена неправльная почта'}, status=status.HTTP_400_BAD_REQUEST)
+            return serializer.errors
+    except Exception as error:
+        print(error)
 
-    @swagger_auto_schema(manual_parameters=[token_param_config])
-    def get(self, request):
-        redirect_url = request.GET.get('redirect_url')
-        token = request.GET.get('token')
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
-            user = User.objects.get(id=payload['user_id'])
-            print(user)
-            if not user.is_verified:
-                user.is_verified = True
-                user.save()
-                return CustomRedirect(f'{redirect_url}?token_valid=True&verification=True')
-            return Response({'email': _('Account successfully verified')}, status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError as identifier:
-            return Response({'error': _('Account activation Expired')}, status.HTTP_400_BAD_REQUEST)
-        except jwt.exceptions.DecodeError as identifier:
-            return Response({'error': _('Invalid token')}, status.HTTP_400_BAD_REQUEST)
+
+# class VerifyEmail(APIView):
+#     serializer_class = EmailVerificationSerializer
+#
+#     token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description',
+#                                            type=openapi.TYPE_STRING)
+#
+#     @swagger_auto_schema(manual_parameters=[token_param_config])
+#     def get(self, request):
+#         redirect_url = request.GET.get('redirect_url')
+#         token = request.GET.get('token')
+#         try:
+#             payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+#             user = User.objects.get(id=payload['user_id'])
+#             print(user)
+#             if not user.is_verified:
+#                 user.is_verified = True
+#                 user.save()
+#                 return CustomRedirect(f'{redirect_url}?token_valid=True&verification=True')
+#             return Response({'email': _('Account successfully verified')}, status.HTTP_200_OK)
+#         except jwt.ExpiredSignatureError as identifier:
+#             return Response({'error': _('Account activation Expired')}, status.HTTP_400_BAD_REQUEST)
+#         except jwt.exceptions.DecodeError as identifier:
+#             return Response({'error': _('Invalid token')}, status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(generics.GenericAPIView):
