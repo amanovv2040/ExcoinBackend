@@ -43,7 +43,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class EmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    code = serializers.CharField(min_length=6)
+    code = serializers.CharField()
 
     class Meta:
         fields = ['email', 'code']
