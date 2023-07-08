@@ -107,7 +107,7 @@ class VerifyEmailCode(APIView):
                         user.save()
                         return Response({'response': _('Активация прошла успешна')}, status=status.HTTP_200_OK)
                 return Response({'error': 'Введена неправльная почта'}, status=status.HTTP_400_BAD_REQUEST)
-            return serializer.errors
+            return Response({'error': serializer.errors})
     except Exception as error:
         print(error)
 
