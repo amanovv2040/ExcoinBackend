@@ -12,13 +12,13 @@ class ReviewAPIView(generics.ListCreateAPIView):
     serializer_class = ReviewAPIViewSerializer
 
     def post(self, request, *args, **kwargs):
-        mutable_data = request.POST.copy()
-        user = User.objects.filter(email=mutable_data['email']).exists()
+        email = request.data['email']
+        user = User.objects.filter(email=email).exists()
         if user:
-            user = User.objects.get(email=mutable_data['email'])
-            mutable_data['user'] = user.id
+            user = User.objects.get(email=email)
+            request.data['user'] = user.id
 
-        serializer = self.serializer_class(data=mutable_data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
