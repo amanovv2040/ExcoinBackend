@@ -1,4 +1,4 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 import threading
 
 
@@ -20,4 +20,21 @@ class Util:
             body=data['email_body'],
             to=[data['to_email']]
         )
+        email.content_subtype = 'html'
         EmailThread(email).start()
+# class Util:
+#     @staticmethod
+#     def send_email(data):
+#         subject = data['email_subject'],
+#         body = data['email_body'],
+#         to = data['to_email'],
+
+#         email = EmailMultiAlternatives(
+#             subject=subject,
+#             body=body,
+#             to=to
+#         )
+
+#         email.attach_alternative(body, 'text/html')
+
+#         EmailThread(email).start()
