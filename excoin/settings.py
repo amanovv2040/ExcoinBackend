@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # local apps
     'account.apps.AccountConfig',
     'review.apps.ReviewConfig',
+    'crypto.apps.CryptoConfig',
 ]
 
 MIDDLEWARE = [

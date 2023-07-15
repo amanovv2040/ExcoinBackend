@@ -1,0 +1,82 @@
+[
+    {
+        "name": "Bitcoin",
+        "symbol": "BTC",
+        "price": "$30,300.01",
+        "volume_24": "$8,637,014,338",
+        "market_cap": "$588,683,661,948",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/1.svg"
+    },
+    {
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "price": "$1,929.56",
+        "volume_24": "$4,714,124,349",
+        "market_cap": "$231,837,685,707",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/1027.svg"
+    },
+    {
+        "name": "Tether",
+        "symbol": "USDT",
+        "price": "$1.00",
+        "volume_24": "$19,991,317,206",
+        "market_cap": "$83,654,764,890",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/825.svg"
+    },
+    {
+        "name": "BNB",
+        "symbol": "BNB",
+        "price": "$250.59",
+        "volume_24": "$425,026,456",
+        "market_cap": "$39,043,746,683",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/1839.svg"
+    },
+    {
+        "name": "XRP",
+        "symbol": "XRP",
+        "price": "$0.7118",
+        "volume_24": "$3,572,063,808",
+        "market_cap": "$37,403,396,746",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/52.svg"
+    },
+    {
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "price": "$1.00",
+        "volume_24": "$2,325,159,312",
+        "market_cap": "$27,285,319,472",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/3408.svg"
+    },
+    {
+        "name": "Cardano",
+        "symbol": "ADA",
+        "price": "$0.3259",
+        "volume_24": "$281,827,605",
+        "market_cap": "$11,397,852,709",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/2010.svg"
+    },
+    {
+        "name": "Solana",
+        "symbol": "SOL",
+        "price": "$27.46",
+        "volume_24": "$1,329,511,064",
+        "market_cap": "$11,055,337,394",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/5426.svg"
+    },
+    {
+        "name": "Dogecoin",
+        "symbol": "DOGE",
+        "price": "$0.07167",
+        "volume_24": "$888,906,610",
+        "market_cap": "$10,046,615,493",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/74.svg"
+    },
+    {
+        "name": "Polygon",
+        "symbol": "MATIC",
+        "price": "$0.8004",
+        "volume_24": "$286,231,772",
+        "market_cap": "$7,459,525,557",
+        "graph": "https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/3890.svg"
+    }
+]
