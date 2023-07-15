@@ -71,7 +71,6 @@ class UserRegisterView(generics.CreateAPIView):
             # current_site_domain = get_current_site(request).domain
             # relative_link = reverse('verify-email')
             # absolute_url = f"http://{current_site_domain}{relative_link}?redirect_url={redirect_url}"
-            code = user.verification_code
             email_body = f"""
                 <div id=":mm" class="ii gt" jslog="20277; u014N:xr6bB; 1:WyIjdGhyZWFkLWY6MTc2ODk2ODY4MzA0MzA2NTk3NiIsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsbnVsbCxudWxsLG51bGwsW11d; 4:WyIjbXNnLWY6MTc2ODk2ODY4MzA0MzA2NTk3NiIsbnVsbCxbXV0."><div id=":mn" class="a3s aiL msg-6630441826265701694"><u></u>
                     <div style="background: linear-gradient(180deg, #10185D 0%, #2E3C8F 100%);width:100%;height:70vh;font-family:roboto,'helvetica neue',helvetica,arial,sans-serif;padding:0;margin:0">
@@ -85,11 +84,11 @@ class UserRegisterView(generics.CreateAPIView):
                                 </svg>
                             </a>
                             <div style="background-color:#ffffff;padding:20px;border-radius:5px">
-                                <h2 style="padding:0;margin:0;margin-bottom:15px;line-height:26px;font-size:22px;font-style:normal;font-weight:normal;color:#3f3d3d">Здравствуйте! {user.username}</h2>
+                                <h2 style="padding:0;margin:0;margin-bottom:15px;line-height:26px;font-size:22px;font-style:normal;font-weight:normal;color:#3f3d3d">Здравствуйте! {user.last_name} {user.first_name}</h2>
                                 <p style="margin:0;font-size:14px;line-height:21px;color:#3f3d3d">Ваш email был указан при регистрации на сайте <a href="http://excoin-react.vercel.app" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://netex.kg&amp;source=gmail&amp;ust=1689257642751000&amp;usg=AOvVaw0BUNn6MdMTXuGBXYRpI1ui">excoin-react.vercel.app</a></p>
                                 <p style="margin:0;font-size:14px;line-height:21px;color:#3f3d3d">Для подтверждения регистрации в системе введите код ниже:</p>
                                 <br>
-                                <b style="display:block;background-color:#f6f6f6;border-radius:7px;border:1px solid #ddd;padding:10px 25px;margin-bottom:20px;color:#000000;font-size:14px;font-weight:normal;text-align:center">{code}</b>
+                                <b style="display:block;background-color:#f6f6f6;border-radius:7px;border:1px solid #ddd;padding:10px 25px;margin-bottom:20px;color:#000000;font-size:14px;font-weight:normal;text-align:center">{user.verification_code}</b>
                                 <br>
                                 <p style="margin:0;font-size:14px;line-height:21px;color:#3f3d3d">Если Вы получили это сообщение, но не подавали заявку на регистрацию, возможно кто-то указал Ваш e-mail по ошибке. В этом случае просто проигнорируйте это сообщение.</p><div class="yj6qo"></div><div class="adL">
                             </div></div><div class="adL">
@@ -108,8 +107,7 @@ class UserRegisterView(generics.CreateAPIView):
                 'response': _('User successfully created. A message was send to the mail.')
             }, status=status.HTTP_201_CREATED)
         else:
-            data = serializer.errors
-            return Response(data)
+            return Response(serializer.errors)
 
 
 class VerifyEmailCode(APIView):
@@ -134,29 +132,29 @@ class VerifyEmailCode(APIView):
         print(error)
 
 
-# class VerifyEmail(APIView):
-#     serializer_class = EmailVerificationSerializer
-#
-#     token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description',
-#                                            type=openapi.TYPE_STRING)
-#
-#     @swagger_auto_schema(manual_parameters=[token_param_config])
-#     def get(self, request):
-#         redirect_url = request.GET.get('redirect_url')
-#         token = request.GET.get('token')
-#         try:
-#             payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
-#             user = User.objects.get(id=payload['user_id'])
-#             print(user)
-#             if not user.is_verified:
-#                 user.is_verified = True
-#                 user.save()
-#                 return CustomRedirect(f'{redirect_url}?token_valid=True&verification=True')
-#             return Response({'email': _('Account successfully verified')}, status.HTTP_200_OK)
-#         except jwt.ExpiredSignatureError as identifier:
-#             return Response({'error': _('Account activation Expired')}, status.HTTP_400_BAD_REQUEST)
-#         except jwt.exceptions.DecodeError as identifier:
-#             return Response({'error': _('Invalid token')}, status.HTTP_400_BAD_REQUEST)
+class VerifyEmailToken(APIView):
+    serializer_class = EmailVerificationSerializer
+
+    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description',
+                                           type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[token_param_config])
+    def get(self, request):
+        redirect_url = request.GET.get('redirect_url')
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+            user = User.objects.get(id=payload['user_id'])
+            print(user)
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+                return CustomRedirect(f'{redirect_url}?token_valid=True&verification=True')
+            return Response({'email': _('Account successfully verified')}, status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': _('Account activation Expired')}, status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': _('Invalid token')}, status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(generics.GenericAPIView):
@@ -188,7 +186,7 @@ class PasswordResetEmail(generics.GenericAPIView):
             relative_link = reverse(
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
             absolute_url = f"http://{current_site}{relative_link}"
-            email_body = f"Здравствуйте! {user.username},\nВы запросили восстановление пароля для Вашей учетной записи: {user.email}\n" \
+            email_body = f"Здравствуйте! {user.first_name} {user.last_name},\nВы запросили восстановление пароля для Вашей учетной записи: {user.email}\n" \
                          f"Чтобы восстановить пароль воспользуйтесь ссылкой ниже: \n\n{absolute_url}?redirect_url={redirect_url}\n\n"
             data = {
                 'email_body': email_body,

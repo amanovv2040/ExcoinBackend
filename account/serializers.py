@@ -16,26 +16,27 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'password2']
+        fields = ['first_name', 'last_name', 'email', 'password', 'password2']
 
     def save(self, *args, **kwargs):
-        # first_name = self.validated_data['first_name']
-        # last_name = self.validated_data['last_name']
-        username = self.validated_data['username']
+        first_name = self.validated_data['first_name']
+        last_name = self.validated_data['last_name']
+        # username = self.validated_data['username']
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         email = self.validated_data['email']
         user = User(
+            first_name=first_name,
+            last_name=last_name,
             email=email,
-            username=username,
         )
 
         if password != password2:
             raise serializers.ValidationError({'password': _("Password doesn't match.")})
-        # if not first_name:
-        #     raise serializers.ValidationError({'first_name': _('User should have a first name.')})
-        # if not last_name:
-        #     raise serializers.ValidationError({'last_name': _('User should have a last name.')})
+        if not first_name:
+            raise serializers.ValidationError({'first_name': _('User should have a first name.')})
+        if not last_name:
+            raise serializers.ValidationError({'last_name': _('User should have a last name.')})
         user.set_password(password)
         user.save()
         return user

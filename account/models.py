@@ -12,21 +12,52 @@ from .managers import UserManager
 # Custom User model
 class User(AbstractUser):
     # username = None
-    email = models.EmailField(_('Email'), unique=True)
-    is_verified = models.BooleanField(verbose_name=_('Verification'), default=False)
+    email = models.EmailField(
+        verbose_name=_('Email'),
+        unique=True
+    )
+    is_verified = models.BooleanField(
+        verbose_name=_('Verification'),
+        default=False
+    )
     # phone = models.CharField(verbose_name=_('Телефон'), max_length=12, unique=True, validators=[
     #     RegexValidator(regex=r'^996\d{9}$', message=_('Передать действительный номер телефона '))])
-    phone = models.CharField(verbose_name=_('Phone'), max_length=12, unique=True, null=True, blank=True)
-    avatar = models.ImageField(verbose_name=_('Profile photo'), upload_to='avatars/', blank=True,
-                               default='avatars/default.png')
-    balance = models.FloatField(verbose_name=_('Remaining balance'), default=0)
-    # skype = models.CharField(verbose_name=_('Skype account'), unique=True)
-    second_name = models.CharField(verbose_name=_('Second name'), max_length=150, blank=True)
-    passport = models.IntegerField(verbose_name=_('Passport ID'), blank=True, null=True, default=0)
-    verification_code = models.CharField(verbose_name=_('Verification code'), null=True, blank=True)
+    phone = models.CharField(
+        verbose_name=_('Phone'),
+        max_length=12,
+        unique=True,
+        null=True,
+        blank=True
+    )
+    avatar = models.ImageField(
+        verbose_name=_('Profile photo'),
+        upload_to='avatars/',
+        blank=True,
+        default='avatars/default.png'
+    )
+    balance = models.FloatField(
+        verbose_name=_('Remaining balance'),
+        default=0
+    )
+    second_name = models.CharField(
+        verbose_name=_('Second name'),
+        max_length=150,
+        blank=True
+    )
+    passport = models.IntegerField(
+        verbose_name=_('Passport ID'),
+        blank=True,
+        null=True,
+        default=0
+    )
+    verification_code = models.CharField(
+        verbose_name=_('Verification code'),
+        null=True,
+        blank=True
+    )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
@@ -44,5 +75,3 @@ class User(AbstractUser):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-
-    # def save(self, *args, **kwargs):
