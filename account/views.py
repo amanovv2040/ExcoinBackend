@@ -12,7 +12,7 @@ from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.shortcuts import redirect
-
+from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import (
     smart_str,
@@ -33,10 +33,11 @@ from .models import User
 from .utils import Util
 from .renderers import UserRenderer
 import jwt
-from django.http import HttpResponsePermanentRedirect
 from dotenv import load_dotenv
 import os
 from random import randint
+from datetime import datetime, timedelta
+
 
 load_dotenv()
 
@@ -62,6 +63,7 @@ class UserRegisterView(generics.CreateAPIView):
             email = serializer.data['email']
             user = User.objects.get(email=email)
             user.verification_code = str(randint(100_000, 999_999))
+            user.verification_code_created_at = datetime.now()
             user.save()
 
             # token = RefreshToken.for_user(user).access_token
@@ -144,7 +146,8 @@ class VerifyEmailToken(APIView):
         redirect_url = request.GET.get('redirect_url')
         token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms='HS256')
             user = User.objects.get(id=payload['user_id'])
             print(user)
             if not user.is_verified:
