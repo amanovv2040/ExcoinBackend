@@ -36,7 +36,7 @@ import jwt
 from dotenv import load_dotenv
 import os
 from random import randint
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 load_dotenv()
@@ -105,13 +105,12 @@ class UserRegisterView(generics.CreateAPIView):
             }
             Util.send_email(email_data)
 
-            # return Response({
-            #     'response': _('Beka krasavchik successfully created. A message was send to the mail.'),
-            #     'data': user.email
-            # }, status=status.HTTP_201_CREATED)
-            return Response(user.email)
+            return Response({
+                'response': _('Beka krasavchik successfully created. A message was send to the mail.'),
+                'email': user.email
+            }, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyEmailCode(APIView):
@@ -124,14 +123,24 @@ class VerifyEmailCode(APIView):
                 email = serializer.data['email']
                 if User.objects.filter(email=email).exists():
                     user = User.objects.get(email=email)
-                    if user.verification_code != code:
-                        return Response({'error': 'Введен неправильный код'}, status=status.HTTP_400_BAD_REQUEST)
-                    else:
-                        user.is_verified = True
-                        user.save()
-                        return Response({'response': _('Активация прошла успешна')}, status=status.HTTP_200_OK)
-                return Response({'error': 'Введена неправльная почта'}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({'error': serializer.errors})
+
+                    if user.verification_code_created_at:
+                        expiration_time = user.verification_code_created_at + timedelta(minutes=30)
+                        expiration_time = expiration_time.replace(tzinfo=timezone.utc)
+                        if datetime.now(timezone.utc) >= expiration_time:
+                            user.verification_code = ''
+                            user.verification_code_created_at = None
+                            user.save()
+                            return Response({'error': _('Время действия кода истекло')}, status=status.HTTP_400_BAD_REQUEST)
+
+                        if user.verification_code == code:
+                            user.is_verified = True
+                            user.save()
+                            return Response({'response': _('Активация прошла успешна')}, status=status.HTTP_200_OK)
+                        return Response({'error': _('Введен неправильный код')}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': _('Код не существует')}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': _('Введена неправльная почта')}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as error:
         print(error)
 

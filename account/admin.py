@@ -32,7 +32,8 @@ class UserAdmin(admin.ModelAdmin):
         'last_login',
         'user_permissions',
         'groups',
-        'verification_code'
+        'verification_code',
+        'verification_code_created_at'
     )
 
     def get_html_avatar(self, object):

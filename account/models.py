@@ -55,7 +55,10 @@ class User(AbstractUser):
         null=True,
         blank=True
     )
-    verification_code_created_at = models.DateTimeField(null=True)
+    verification_code_created_at = models.DateTimeField(
+        verbose_name=_('Verifcation code created time'),
+        null=True
+        )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
