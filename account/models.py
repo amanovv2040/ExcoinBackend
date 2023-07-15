@@ -11,7 +11,11 @@ from .managers import UserManager
 
 # Custom User model
 class User(AbstractUser):
-    username = None
+    username = models.CharField(
+        unique=False,
+        null=True,
+        blank=True
+    )
     email = models.EmailField(
         verbose_name=_('Email'),
         unique=True
@@ -58,7 +62,7 @@ class User(AbstractUser):
     verification_code_created_at = models.DateTimeField(
         verbose_name=_('Verifcation code created time'),
         null=True
-        )
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
