@@ -105,10 +105,11 @@ class UserRegisterView(generics.CreateAPIView):
             }
             Util.send_email(email_data)
 
-            return Response({
-                'response': _('Beka krasavchik successfully created. A message was send to the mail.'),
-                'data': user.email
-            }, status=status.HTTP_201_CREATED)
+            # return Response({
+            #     'response': _('Beka krasavchik successfully created. A message was send to the mail.'),
+            #     'data': user.email
+            # }, status=status.HTTP_201_CREATED)
+            return Response(user.email)
         else:
             return Response(serializer.errors)
 
