@@ -140,7 +140,7 @@ class VerifyEmailCode(APIView):
                         return Response({'error': _('Введен неправильный код'), 'status': False})
                     return Response({'error': _('Код не существует'), 'status': False})
                 return Response({'error': _('Введена неправльная почта'), 'status': False})
-            return Response({'error': serializer.errors}, 'status': False)
+            return Response({'error': serializer.errors, 'status': False})
     except Exception as error:
         print(error)
 
