@@ -131,16 +131,16 @@ class VerifyEmailCode(APIView):
                             user.verification_code = ''
                             user.verification_code_created_at = None
                             user.save()
-                            return Response({'error': _('Время действия кода истекло')}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({'error': _('Время действия кода истекло'), 'status': False})
 
                         if user.verification_code == code:
                             user.is_verified = True
                             user.save()
-                            return Response({'response': _('Активация прошла успешна')}, status=status.HTTP_200_OK)
-                        return Response({'error': _('Введен неправильный код')}, status=status.HTTP_400_BAD_REQUEST)
-                    return Response({'error': _('Код не существует')}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({'error': _('Введена неправльная почта')}, status=status.HTTP_400_BAD_REQUEST)
-            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({'response': _('Активация прошла успешна'), 'status': True}, status=status.HTTP_200_OK)
+                        return Response({'error': _('Введен неправильный код'), 'status': False})
+                    return Response({'error': _('Код не существует'), 'status': False})
+                return Response({'error': _('Введена неправльная почта'), 'status': False})
+            return Response({'error': serializer.errors}, 'status': False)
     except Exception as error:
         print(error)
 
