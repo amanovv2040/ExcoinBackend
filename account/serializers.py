@@ -53,7 +53,6 @@ class EmailVerificationSerializer(serializers.Serializer):
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=200, min_length=3)
     password = serializers.CharField(write_only=True, required=True, max_length=68, min_length=8)
-    username = serializers.CharField(max_length=200, read_only=True)
     tokens = serializers.SerializerMethodField()
 
     def get_tokens(self, obj):
@@ -66,7 +65,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'tokens']
+        fields = ['email', 'password', 'tokens']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -85,7 +84,6 @@ class LoginSerializer(serializers.ModelSerializer):
 
         return {
             'email': user.email,
-            'username': user.username,
             'tokens': user.token()
         }
 
