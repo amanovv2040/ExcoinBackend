@@ -11,7 +11,7 @@ from .managers import UserManager
 
 # Custom User model
 class User(AbstractUser):
-    # username = None
+    username = None
     email = models.EmailField(
         verbose_name=_('Email'),
         unique=True
